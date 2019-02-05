@@ -4,6 +4,9 @@
 
 #include "Interacting_Harmonic_Oscillator.hh"
 #include <cmath>
+#include <vector>
+#include <iostream>
+using namespace std;
 
 Interacting_Harmonic_Oscillator::Interacting_Harmonic_Oscillator(unsigned int N_, double initial_variance_,
                                                                  unsigned int bloc_size_, unsigned int nb_blocs_,
@@ -11,7 +14,7 @@ Interacting_Harmonic_Oscillator::Interacting_Harmonic_Oscillator(unsigned int N_
                                                                  unsigned int warmup_steps_,
                                                                  unsigned int steps_between_samples_,
                                                                  const string &outputfile_name_,
-                                                                 const ofstream &outputfile_, double beta_,
+                                                                 double beta_,
                                                                  double omega_0_, double m_, double eps_0_, double a1_,
                                                                  double a2_, double alpha_1_, double alpha_2_,
                                                                  double f_, double t_max_, double dt_,
@@ -24,8 +27,7 @@ Interacting_Harmonic_Oscillator::Interacting_Harmonic_Oscillator(unsigned int N_
                                                                                                      points_to_update_,
                                                                                                      warmup_steps_,
                                                                                                      steps_between_samples_,
-                                                                                                     outputfile_name_,
-                                                                                                     outputfile_),
+                                                                                                     outputfile_name_),
                                                                                           beta_(beta_),
                                                                                           omega_0_(omega_0_), m_(m_),
                                                                                           eps_0_(eps_0_), a1_(a1_),
@@ -35,18 +37,27 @@ Interacting_Harmonic_Oscillator::Interacting_Harmonic_Oscillator(unsigned int N_
                                                                                           omega_max_(omega_max_),
                                                                                           domega_(domega_),
                                                                                           F_modes_(F_modes_),current_tau_(current_tau_),Jb_(ceil(omega_max_/domega_),0),Omega_(F_modes_,0),
-                                                                                          x_norm_fourier_squared_(F_modes_,0),xi_(ceil(t_max_/dt_),0)
+                                                                                          x_norm_fourier_squared_(F_modes_,0),Gamma_(F_modes_,0),xi_(ceil(t_max_/dt_),0)
 
 {
+    cout<<"1"<<endl;
     init_Omega();
+    cout<<"2"<<endl;
+
     init_xi();
+    cout<<"3"<<endl;
+
     init_J();
+    cout<<"4"<<endl;
+
     init_Gamma();
+    cout<<"5"<<endl;
+
 }
 
 void Interacting_Harmonic_Oscillator::init_Omega() {
     for (unsigned int i(0);i<F_modes_;i++){
-        Gamma_[i]=2*M_PI*i/beta_;
+        Omega_[i]=2*M_PI*i/beta_;
     }
 }
 
@@ -64,7 +75,7 @@ void Interacting_Harmonic_Oscillator::init_xi() {
 void Interacting_Harmonic_Oscillator::init_J() {
     // Initialize frequency
     double w(0);
-
+    cout<<Jb_.size()<<endl<<xi_.size()<<endl;
     for(auto& el : Jb_){
         // Perform the cosine transform
         double t(0);

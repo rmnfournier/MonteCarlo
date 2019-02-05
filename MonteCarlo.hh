@@ -18,10 +18,10 @@ class MonteCarlo {
 public:
     MonteCarlo(unsigned int N_, double initial_variance_, unsigned int bloc_size_, unsigned int nb_blocs_,
                double step_variance_, unsigned int points_to_update_, unsigned int warmup_steps_,
-               unsigned int steps_between_samples_, const string &outputfile_name_, const ofstream &outputfile_) : N_(
+               unsigned int steps_between_samples_, const string &outputfile_name_) : N_(
             N_), initial_variance_(initial_variance_), bloc_size_(bloc_size_), nb_blocs_(nb_blocs_), step_variance_(
             step_variance_), points_to_update_(points_to_update_), warmup_steps_(warmup_steps_), steps_between_samples_(
-            steps_between_samples_), outputfile_name_(outputfile_name_) {}
+            steps_between_samples_), outputfile_name_(outputfile_name_),x_(N_,0) {}
 
     /**
      * @brief generate a random configuration x according to the initial_variance_ attribut

@@ -8,13 +8,13 @@
 #ifndef MONTECARLO_INTERACTING_HARMONIC_OSCILLATOR_HH
 #define MONTECARLO_INTERACTING_HARMONIC_OSCILLATOR_HH
 
-#include "MonteCarlo.hh
+#include "MonteCarlo.hh"
 class Interacting_Harmonic_Oscillator : public MonteCarlo{
     public:
         Interacting_Harmonic_Oscillator(unsigned int N_, double initial_variance_, unsigned int bloc_size_,
                                     unsigned int nb_blocs_, double step_variance_, unsigned int points_to_update_,
                                     unsigned int warmup_steps_, unsigned int steps_between_samples_,
-                                    const string &outputfile_name_, const ofstream &outputfile_, double beta_,
+                                    const string &outputfile_name_,  double beta_,
                                     double omega_0_, double m_, double eps_0_, double a1_, double a2_, double alpha_1_,
                                     double alpha_2_, double f_, double t_max_, double dt_, double omega_max_,
                                     double domega_, unsigned int F_modes_, unsigned int current_tau_);
