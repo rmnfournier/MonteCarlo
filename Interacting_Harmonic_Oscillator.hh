@@ -1,0 +1,16 @@
+//
+// Created by romain on 05/02/19.
+//
+
+#ifndef MONTECARLO_INTERACTING_HARMONIC_OSCILLATOR_HH
+#define MONTECARLO_INTERACTING_HARMONIC_OSCILLATOR_HH
+
+
+
+class Interacting_Harmonic_Oscillator {
+
+};
+
+
+
+#endif //MONTECARLO_INTERACTING_HARMONIC_OSCILLATOR_HH
