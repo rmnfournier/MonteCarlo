@@ -16,7 +16,7 @@ Interacting_Harmonic_Oscillator::Interacting_Harmonic_Oscillator(unsigned int N_
                                                                  double a2_, double alpha_1_, double alpha_2_,
                                                                  double f_, double t_max_, double dt_,
                                                                  double omega_max_, double domega_,
-                                                                 unsigned int F_modes_) : MonteCarlo(N_,
+                                                                 unsigned int F_modes_, unsigned int current_tau_) : MonteCarlo(N_,
                                                                                                      initial_variance_,
                                                                                                      bloc_size_,
                                                                                                      nb_blocs_,
@@ -34,8 +34,8 @@ Interacting_Harmonic_Oscillator::Interacting_Harmonic_Oscillator(unsigned int N_
                                                                                           t_max_(t_max_), dt_(dt_),
                                                                                           omega_max_(omega_max_),
                                                                                           domega_(domega_),
-                                                                                          F_modes_(F_modes_),Jb_(ceil(omega_max_/domega_),0),Omega_(F_modes_,0),
-                                                                                          x_norm_fourier_(F_modes_,0),xi_(ceil(t_max_/dt_),0)
+                                                                                          F_modes_(F_modes_),current_tau_(current_tau_),Jb_(ceil(omega_max_/domega_),0),Omega_(F_modes_,0),
+                                                                                          x_norm_fourier_squared_(F_modes_,0),xi_(ceil(t_max_/dt_),0)
 
 {
     init_Omega();
@@ -106,4 +106,45 @@ void Interacting_Harmonic_Oscillator::init_Gamma() {
             tau+=dtau;
         }
     }
+}
+
+void Interacting_Harmonic_Oscillator::compute_x_norm_fourier(const vector<double> & x) {
+    double beta_inv(1/beta_);
+    double dtau(beta_/N_);
+    double x_norm_fourier_real(0);
+    double x_norm_fourier_im(0);
+
+    for(size_t i(0);i<x_norm_fourier_squared_.size();i++){
+        double tau(0);
+        double factor(2*beta_inv*dtau);
+        x_norm_fourier_im=0;
+        x_norm_fourier_real=0;
+        for(size_t j(0);j<x_.size();j++){
+            x_norm_fourier_real+=factor*x[j]*cos(Omega_[i]*tau);
+            x_norm_fourier_im+=factor*x[j]*sin(Omega_[i]*tau);
+            tau+=dtau;
+        }
+        x_norm_fourier_squared_[i]=(pow(x_norm_fourier_im,2)+pow(x_norm_fourier_real,2));
+    }
+}
+
+double Interacting_Harmonic_Oscillator::influence_functional(const vector<double> & x){
+    compute_x_norm_fourier(x);
+    double S(0);
+
+    //First term
+    S+=0.5*(m_*omega_0_*omega_0_-Gamma_[0])*x_norm_fourier_squared_[0];
+    // other terms
+    for (size_t i(1);i<x_norm_fourier_squared_.size();i++){
+        S+=(m_*Omega_[i]*Omega_[i]+m_*omega_0_*omega_0_-Gamma_[i])*x_norm_fourier_squared_[i];
+    }
+    return -beta_*S;
+}
+
+double Interacting_Harmonic_Oscillator::sampling_term(){
+    return x_[0]*x_[current_tau_];
+}
+
+double Interacting_Harmonic_Oscillator::p(const vector<double> & x){
+    return exp(-influence_functional(x));
 }
