@@ -6,6 +6,7 @@
 #include <cmath>
 #include <vector>
 #include <iostream>
+#include <limits>
 using namespace std;
 
 Interacting_Harmonic_Oscillator::Interacting_Harmonic_Oscillator(unsigned int N_, double initial_variance_,
@@ -40,19 +41,15 @@ Interacting_Harmonic_Oscillator::Interacting_Harmonic_Oscillator(unsigned int N_
                                                                                           x_norm_fourier_squared_(F_modes_,0),Gamma_(F_modes_,0),xi_(ceil(t_max_/dt_),0)
 
 {
-    cout<<"1"<<endl;
+    cout<<" Start Initialization "<<endl;
     init_Omega();
-    cout<<"2"<<endl;
 
     init_xi();
-    cout<<"3"<<endl;
 
     init_J();
-    cout<<"4"<<endl;
 
     init_Gamma();
-    cout<<"5"<<endl;
-
+    cout<<"Initialization complete "<<endl;
 }
 
 void Interacting_Harmonic_Oscillator::init_Omega() {
@@ -73,49 +70,85 @@ void Interacting_Harmonic_Oscillator::init_xi() {
 }
 
 void Interacting_Harmonic_Oscillator::init_J() {
-    // Initialize frequency
-    double w(0);
-    cout<<Jb_.size()<<endl<<xi_.size()<<endl;
-    for(auto& el : Jb_){
-        // Perform the cosine transform
-        double t(0);
-        for(auto it=xi_.begin();it!=xi_.end();it++){
-            // Count boundary terms once and Inner terms twice
-            double factor(0);
-            (it == xi_.begin() or it ==xi_.end()) ? factor=dt_/M_PI:factor=2*dt_/M_PI;
-            el+=*it *cos(w*t)*factor;
-            t+=dt_;
+    std::ifstream infile("Jb.csv");
+    // Check if we can load J instead of computing it
+    if(infile.is_open()){
+        cout<<"Reading J"<<endl;
+        //preprocess
+        string line;
+        // Non Robust and bad way to read, but it's only an example so who cares :P
+        for(auto& el : Jb_){
+            getline(infile,line,',');
+            el=stod(line);
         }
-        //update the frequency
-        w+=domega_;
     }
+    else {
+        std::ofstream outfile("Jb.csv");
+        // Initialize frequency
+        double w(0);
+        for (auto &el : Jb_) {
+            // Perform the cosine transform
+            double t(0);
+            for (auto it = xi_.begin(); it != xi_.end(); it++) {
+                // Count boundary terms once and Inner terms twice
+                double factor(0);
+                (it == xi_.begin() or it == xi_.end()) ? factor = dt_ / M_PI : factor = 2 * dt_ / M_PI;
+                el += *it * cos(w * t) * factor;
+                t += dt_;
+            }
+            outfile<<el<<',';
+            //update the frequency
+            w += domega_;
+        }
+        outfile.close();
+    }
+    infile.close();
+
 }
 
 void Interacting_Harmonic_Oscillator::init_Gamma() {
-    // We start by computing gamma in imaginary time, and then we save its coefficients
-    vector<double> gamma_im_time(ceil(t_max_/dt_),0);
-    double tau(0),dtau(0.5*beta_/ceil(t_max_/dt_));
-
-    for(auto& el : gamma_im_time){
-        double w(domega_/100.); // Initialize w close to 0 to avoid dividing by 0
-        for(auto it=Jb_.begin();it!=Jb_.end();it++){
-            double factor(0);
-            (it == Jb_.begin() or it ==Jb_.end()) ? factor=domega_*beta_:factor=2*domega_*beta_;
-            el+=*it *w*cosh(beta_*w*(0.5-tau/beta_))/sinh(0.5*beta_*w)*factor;
-            w+=domega_;
+    std::ifstream infile("Gamma.csv");
+    // Check if we can load J instead of computing it
+    if(infile.is_open()){
+        cout<<"Reading Gamma"<<endl;
+        //preprocess
+        string line;
+        // Non Robust and bad way to read, but it's only an example so who cares :P
+        for(auto& el : Gamma_){
+            getline(infile,line,',');
+            el=stod(line);
         }
-        tau+=dtau;
     }
+    else {
+        std::ofstream outfile("Gamma.csv");
+        // We start by computing gamma in imaginary time, and then we save its coefficients
+        vector<double> gamma_im_time(ceil(t_max_ / dt_), 0);
+        double tau(0), dtau(0.5 * beta_ / ceil(t_max_ / dt_));
 
-    // We can now compute the Fourier coefficients
-    for(size_t i(0);i<F_modes_;i++){
-        tau=0;
-        for(auto it=gamma_im_time.begin();it!=gamma_im_time.end();it++){
-            double factor(0);
-            (it == Jb_.begin() or it ==Jb_.end()) ? factor=dtau/beta_*2:factor=2*dtau/beta_*2;
-            Gamma_[i]+=factor* *it *cos(tau*Omega_[i]);
-            tau+=dtau;
+        for (auto &el : gamma_im_time) {
+            double w(domega_ / 100.); // Initialize w close to 0 to avoid dividing by 0
+            for (auto it = Jb_.begin(); it != Jb_.end(); it++) {
+                double factor(0);
+                (it == Jb_.begin() or it == Jb_.end()) ? factor = domega_ * beta_ : factor = 2 * domega_ * beta_;
+                el += *it * w * cosh(beta_ * w * (0.5 - tau / beta_)) / sinh(0.5 * beta_ * w) * factor;
+                w += domega_;
+            }
+            tau += dtau;
         }
+
+
+        // We can now compute the Fourier coefficients
+        for (size_t i(0); i < F_modes_; i++) {
+            tau = 0;
+            for (auto it = gamma_im_time.begin(); it != gamma_im_time.end(); it++) {
+                double factor(0);
+                (it == Jb_.begin() or it == Jb_.end()) ? factor = dtau / beta_ * 2 : factor = 2 * dtau / beta_ * 2;
+                Gamma_[i] += factor * *it * cos(tau * Omega_[i]);
+                tau += dtau;
+            }
+            outfile<<Gamma_[i]<<',';
+        }
+        outfile.close();
     }
 }
 
