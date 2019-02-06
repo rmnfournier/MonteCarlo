@@ -56,8 +56,8 @@ unsigned int MonteCarlo::warmup(unsigned int nb_steps){
         }
        ratio= accepted / (nb_steps + 0.0);
         //update the step if the ratio does not correspond to the ideal ones.
-        if(ratio<0.2) step_variance_*=1.1;
-        if(ratio>0.4) step_variance_/=1.15;
+        if(ratio<0.2) step_variance_/=1.1;
+        if(ratio>0.4) step_variance_*=1.15;
         cout<<" New step variance = "<<step_variance_<<"; ratio was : "<<ratio<<endl;
     }while (ratio<0.2 or ratio>0.4);
     return accepted;
