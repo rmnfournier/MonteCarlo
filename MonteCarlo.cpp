@@ -46,10 +46,20 @@ bool MonteCarlo::metropolis(){
 }
 
 unsigned int MonteCarlo::warmup(unsigned int nb_steps){
+    double ratio(0);
     unsigned int accepted(0);
-    for (unsigned int i(0);i<nb_steps;i++){
-        if(metropolis()) accepted++; // Increment accepted if metropolis returns true, i.e. a change has been made
-    }
+
+    do {
+        accepted=0;
+        for (unsigned int i(0); i < nb_steps; i++) {
+            if (metropolis()) accepted++; // Increment accepted if metropolis returns true, i.e. a change has been made
+        }
+       ratio= accepted / (nb_steps + 0.0);
+        //update the step if the ratio does not correspond to the ideal ones.
+        if(ratio<0.2) step_variance_*=1.1;
+        if(ratio>0.4) step_variance_/=1.15;
+        cout<<" New step variance = "<<step_variance_<<"; ratio was : "<<ratio<<endl;
+    }while (ratio<0.2 or ratio>0.4);
     return accepted;
 }
 
