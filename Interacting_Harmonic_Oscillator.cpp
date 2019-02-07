@@ -45,8 +45,9 @@ Interacting_Harmonic_Oscillator::Interacting_Harmonic_Oscillator(unsigned int N_
     init_Omega();
 
     init_xi();
-
+    if(verbose_) cout<<"xhi initialized successfully"<<endl;
     init_J();
+    if(verbose_) cout<<"J initialized successfully"<<endl;
 
     init_Gamma();
     if(verbose_) cout<<"Initialization complete "<<endl;
@@ -87,7 +88,8 @@ void Interacting_Harmonic_Oscillator::init_J() {
         }
     }
     else {
-        std::ofstream outfile("Jb.csv");
+        std::ofstream outfile;
+        if(verbose_) outfile.open("Jb.csv");
         // Initialize frequency
         double w(0);
         for (auto &el : Jb_) {
@@ -100,11 +102,11 @@ void Interacting_Harmonic_Oscillator::init_J() {
                 el += *it * cos(w * t) * factor;
                 t += dt_;
             }
-            outfile<<el<<',';
+            if(verbose_) outfile<<el<<',';
             //update the frequency
             w += domega_;
         }
-        outfile.close();
+        if(verbose_) outfile.close();
     }
     infile.close();
 
@@ -124,7 +126,8 @@ void Interacting_Harmonic_Oscillator::init_Gamma() {
         }
     }
     else {
-        std::ofstream outfile("Gamma.csv");
+        std::ofstream outfile;
+        if (verbose_) outfile.open("Gamma.csv");
         // We start by computing gamma in imaginary time, and then we save its coefficients
         double tau(0), dtau(beta_ /(N_+0.0));
 
@@ -136,12 +139,12 @@ void Interacting_Harmonic_Oscillator::init_Gamma() {
                 el += *it * w * cosh(beta_ * w * (0.5 - tau / beta_)) / sinh(0.5 * beta_ * w) * factor;
                 w += domega_;
             }
-            outfile<<el<<",";
+            if(verbose_)outfile<<el<<",";
             tau += dtau;
         }
 
 
-        outfile.close();
+        if(verbose_) outfile.close();
     }
 }
 
