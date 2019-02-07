@@ -4,8 +4,10 @@
 Simple abstract class to help performing Monte Carlo simulations in c++
 
 ## Note 
- The class has not been tested yet
+ Test of PIMC (Path Integral Monte Carlo) passed for harmonic oscillator coupled to harmonic bath
  
 ## Road Map
- * Tests 
- * MPI implementation
+ * Tests (done)
+ * MPI implementation (done) 
+ * More robust i/o for saving results
+ * Performance improvement 
