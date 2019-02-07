@@ -10,9 +10,9 @@ int main(int argc, char * argv[]) {
     MPI_Comm_rank(MPI_COMM_WORLD,&prank);
     MPI_Comm_size(MPI_COMM_WORLD,&psize);
 
-    std::cout << "Hello, World!" << std::endl;
+    std::cout << "Starting Simulation !" << std::endl;
    Interacting_Harmonic_Oscillator sim (64, 0.0025,
-                                         10000, 300,
+                                         20000, 300,
                                          0.01, 1,
                                          1000,
                                          100,
@@ -21,7 +21,7 @@ int main(int argc, char * argv[]) {
                                           285, 903, 75,
                                           0.2, 5, 0.0005,
                                           75,  0.001,
-                                          64, 8*prank);
+                                          64, 8*prank,prank==0);
 
 
    sim.sample();

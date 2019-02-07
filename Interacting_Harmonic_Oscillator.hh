@@ -17,7 +17,7 @@ class Interacting_Harmonic_Oscillator : public MonteCarlo{
                                     const string &outputfile_name_,  double beta_,
                                     double omega_0_, double m_, double eps_0_, double a1_, double a2_, double alpha_1_,
                                     double alpha_2_, double f_, double t_max_, double dt_, double omega_max_,
-                                    double domega_, unsigned int F_modes_, unsigned int current_tau_);
+                                    double domega_, unsigned int F_modes_, unsigned int current_tau_,bool verbose=false);
 
 
         double p(const vector<double> & x) override;
@@ -50,7 +50,7 @@ class Interacting_Harmonic_Oscillator : public MonteCarlo{
          * @param x trajectory to consider
          * @return S
          */
-        double influence_functional(const vector<double> & x);
+        double action(const vector<double> &x);
 
 
     // Term to consider
@@ -71,6 +71,8 @@ class Interacting_Harmonic_Oscillator : public MonteCarlo{
         unsigned int F_modes_; /** Number of Fourier modes to consider */
         vector<double> Omega_,Gamma_; /** Part of the analytic solution */
         vector<double> x_norm_fourier_squared_; /** Squared Norm of the Fourier coefficients of the trajectory */
+
+        bool verbose_;
 };
 
 

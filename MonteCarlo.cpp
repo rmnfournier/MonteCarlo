@@ -38,6 +38,7 @@ bool MonteCarlo::metropolis(){
         x_new[slice]+=delta_xi;
     }
     // accepts it according to metropolis-hasting rule
+    //cout<<"P(x) = "<<p(x_)<<"; p(xnew)="<<p(x_new)<<endl;
     if(p(x_new)/p(x_)>=uniform(generator)){
         x_=std::move(x_new);
         accepted=true;
@@ -58,7 +59,7 @@ unsigned int MonteCarlo::warmup(unsigned int nb_steps){
         //update the step if the ratio does not correspond to the ideal ones.
         if(ratio<0.2) step_variance_/=1.1;
         if(ratio>0.4) step_variance_*=1.15;
-        cout<<" New step variance = "<<step_variance_<<"; ratio was : "<<ratio<<endl;
+        //cout<<" New step variance = "<<step_variance_<<"; ratio was : "<<ratio<<endl;
     }while (ratio<0.2 or ratio>0.4);
     return accepted;
 }
@@ -75,10 +76,11 @@ void MonteCarlo::sample(){
         for(unsigned int bloc(0);bloc<bloc_size_;bloc++) {
             // Perform some updates before sampling again
             warmup(steps_between_samples_);
+            //cout<<bloc/(bloc_size_+0.0)<<endl;
             // Update the mean value of the term
             bloc_mean+=sampling_term();
         }
-        // Devide by the bloc_size to get the mean
+        // Divide by the bloc_size to get the mean
         bloc_mean/=(bloc_size_+0.0);
         // Save the results for analysis
         write_bloc_result(bloc_mean);
